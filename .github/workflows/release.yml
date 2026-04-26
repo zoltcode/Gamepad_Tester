@@ -1,0 +1,66 @@
+name: Build and Package
+
+on:
+  push:
+    # This ensures the workflow only runs when pushing a tag
+    # matching the vX.X.X format (exactly one digit per section)
+    tags:
+      - 'v[0-9].[0-9].[0-9]'
+
+jobs:
+  build:
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            artifact_name: gamepad_tester_linux
+            executable: gamepad_tester
+          - os: windows-latest
+            artifact_name: gamepad_tester_windows
+            executable: gamepad_tester.exe
+          - os: macos-latest
+            artifact_name: gamepad_tester_macos
+            executable: gamepad_tester
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Install Linux-specific dependencies for SDL3
+      - name: Install Linux dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwayland-dev libxkbcommon-dev \
+          xorg-dev libegl1-mesa-dev libvulkan-dev
+
+      - name: Configure CMake
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build build --config Release
+
+      # Package for Linux and macOS
+      - name: Package (Unix)
+        if: runner.os != 'Windows'
+        run: |
+          tar -czvf ${{ matrix.artifact_name }}.tar.gz -C build ${{ matrix.executable }}
+
+      # Package for Windows
+      - name: Package (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          Compress-Archive -Path build\Release\${{ matrix.executable }} -DestinationPath ${{ matrix.artifact_name }}.zip
+
+      # This step creates an actual GitHub Release and uploads the files
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            *.tar.gz
+            *.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
