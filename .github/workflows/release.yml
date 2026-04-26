@@ -16,13 +16,13 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            artifact_name: gamepad_tester_linux
+            artifact_name: gamepad_tester_linux_x86_64
             executable: gamepad_tester
           - os: windows-latest
-            artifact_name: gamepad_tester_windows
+            artifact_name: gamepad_tester_windows_x86_64
             executable: gamepad_tester.exe
           - os: macos-latest
-            artifact_name: gamepad_tester_macos
+            artifact_name: gamepad_tester_macos_arm64
             executable: gamepad_tester
 
     steps:
