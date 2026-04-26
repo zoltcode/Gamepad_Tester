@@ -5,6 +5,10 @@ void GamepadManager::passEvent(SDL_Event* event)
 {
     if (event->type == SDL_EVENT_GAMEPAD_ADDED && !m_gamepad) {
         m_gamepad = SDL_OpenGamepad(event->gdevice.which);
+        if (m_gamepad) {
+            SDL_SetGamepadSensorEnabled(m_gamepad, SDL_SENSOR_INVALID, false);
+            SDL_SetHint(SDL_HINT_JOYSTICK_LINUX_DEADZONES, "0");
+        }
     }
 
     if (event->type == SDL_EVENT_GAMEPAD_REMOVED) {

@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
-project(gamepad_tester)
+project(gamepad_tester
+        VERSION 0.1.0
+        LANGUAGES CXX)
 
 # Standard C++23
 set(CMAKE_CXX_STANDARD 23)
@@ -15,7 +17,7 @@ include(FetchContent)
 FetchContent_Declare(
   SDL3
   GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-  GIT_TAG        main # Or use a specific tag like 'release-3.2.0'
+  GIT_TAG        release-3.4.4 # Or use a specific tag like 'release-3.2.0'
 )
 
 # 2. Make SDL3 targets available
@@ -46,6 +48,10 @@ TextureLoader.cpp
 # Linking SDL3
 target_link_libraries(gamepad_tester SDL3::SDL3-static
 X11 xkbcommon wayland-client wayland-egl wayland-cursor decor-0 m dl pthread
+)
+
+target_compile_definitions(gamepad_tester PRIVATE
+    GAMEPAD_TESTER_VERSION="${PROJECT_VERSION}"
 )
 
 # Helpful: tell the compiler where to find ImGui headers in the same folder

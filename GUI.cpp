@@ -71,21 +71,21 @@ void GUI::updateUI()
 
     ImGui::Begin("MainUI", nullptr, flags);
 
-    ImGui::Text("Gamepad Diagnostic Tool");
+    ImGui::Text("Gamepad Diagnostic Tool v" GAMEPAD_TESTER_VERSION);
     ImGui::Separator();
 
     if (m_gamepad.isConnected()) {
         // --- 1. Controller Visualization ---
         if (m_texture) {
 
-            ImVec2 image_display_size(600, 600);
+            ImVec2 image_display_size(600, 600 * 0.85f);
 
 
             ImGui::Image(
                 (ImTextureID)m_texture,
                          image_display_size,
                          ImVec2(0, 0),          // UV0 (Top Left)
-            ImVec2(1, 1),          // UV1 (Bottom Right)
+            ImVec2(1, 0.85f),          // UV1 (Bottom Right)
             ImVec4(1, 1, 1, 1),    // Tint Color (White)
             ImVec4(0, 0, 0, 0)     // Border Color (Transparent/None)
             );
@@ -231,8 +231,50 @@ void GUI::updateUI()
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
 
-            // TODO: Implement stick squares here later
-            ImGui::Text("Stick Visualizer Space (Placeholder)");
+            auto drawStickVisualizer = [&](const char* label, SDL_GamepadAxis axisX, SDL_GamepadAxis axisY) {
+                ImDrawList* draw_list = ImGui::GetWindowDrawList();
+                ImVec2 size(200, 200);
+                ImVec2 pos = ImGui::GetCursorScreenPos();
+                ImVec2 center = ImVec2(pos.x + size.x / 2.0f, pos.y + size.y / 2.0f);
+
+                // 1. Draw the Square Border & Center Crosshair
+                draw_list->AddRect(pos, ImVec2(pos.x + size.x, pos.y + size.y), IM_COL32(150, 150, 150, 255), 0, 0, 1.5f);
+                draw_list->AddLine(ImVec2(center.x, pos.y), ImVec2(center.x, pos.y + size.y), IM_COL32(80, 80, 80, 255));
+                draw_list->AddLine(ImVec2(pos.x, center.y), ImVec2(pos.x + size.x, center.y), IM_COL32(80, 80, 80, 255));
+
+                // 2. Circularity Guide
+                draw_list->AddCircle(center, size.x / 2.0f, IM_COL32(0, 255, 0, 100), 64);
+
+                // 3. Fetch Honest Data
+                float x = m_gamepad.getAxis(axisX); // Normalized -1.0 to 1.0
+                float y = m_gamepad.getAxis(axisY);
+
+                // 4. Map to screen
+                ImVec2 dotPos = ImVec2(center.x + x * (size.x / 2.0f), center.y + y * (size.y / 2.0f));
+
+                // 5. Draw the Stick Position (Red for high visibility)
+                draw_list->AddCircleFilled(dotPos, 6.0f, IM_COL32(255, 0, 0, 255));
+
+                // 6. Labels and Values
+                ImGui::Dummy(size); // Reserve space for the drawing
+                ImGui::Text("%s", label);
+                ImGui::Text("X: %.4f Y: %.4f", x, y);
+            };
+
+            // Position the sticks slightly lower than the text
+            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10);
+
+            // Draw Left Stick
+            ImGui::BeginGroup();
+            drawStickVisualizer("Left Stick", SDL_GAMEPAD_AXIS_LEFTX, SDL_GAMEPAD_AXIS_LEFTY);
+            ImGui::EndGroup();
+
+            ImGui::SameLine(0, 20); // 40px gap between the two squares
+
+            // Draw Right Stick
+            ImGui::BeginGroup();
+            drawStickVisualizer("Right Stick", SDL_GAMEPAD_AXIS_RIGHTX, SDL_GAMEPAD_AXIS_RIGHTY);
+            ImGui::EndGroup();
 
             ImGui::TableNextColumn();
 
