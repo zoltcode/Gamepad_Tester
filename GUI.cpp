@@ -164,12 +164,8 @@ void GUI::updateUI()
             }
 
             // Function to draw a rectangle for D-pad directions
-            auto drawDPad = [&](SDL_GamepadButton btn, float xOffset, float yOffset, bool vertical) {
+            auto drawDPad = [&](SDL_GamepadButton btn, float xOffset, float yOffset, float w, float h) {
                 if (m_gamepad.isButtonPressed(btn)) {
-                    // Size of the D-pad segment
-                    float w = vertical ? 12.0f : 20.0f;
-                    float h = vertical ? 20.0f : 12.0f;
-
                     ImVec2 posTopLeft = ImVec2(anchor.x + xOffset, anchor.y + yOffset);
                     ImVec2 posBottomRight = ImVec2(posTopLeft.x + w, posTopLeft.y + h);
 
@@ -177,10 +173,11 @@ void GUI::updateUI()
                 }
             };
 
-            drawDPad(SDL_GAMEPAD_BUTTON_DPAD_UP,    223.0f, 273.0f, true);  // Vertical rect
-            drawDPad(SDL_GAMEPAD_BUTTON_DPAD_DOWN,  223.0f, 339.0f, true);  // Vertical rect
-            drawDPad(SDL_GAMEPAD_BUTTON_DPAD_LEFT,  187.0f, 304.0f, false); // Horizontal rect
-            drawDPad(SDL_GAMEPAD_BUTTON_DPAD_RIGHT, 251.0f, 304.0f, false); // Horizontal rect
+
+            drawDPad(SDL_GAMEPAD_BUTTON_DPAD_UP,    217.0f, 264.0f, 24.0f, 28.0f);
+            drawDPad(SDL_GAMEPAD_BUTTON_DPAD_DOWN,  217.0f, 321.0f, 24.0f, 28.0f);
+            drawDPad(SDL_GAMEPAD_BUTTON_DPAD_LEFT,  178.0f, 294.0f, 28.0f, 24.0f);
+            drawDPad(SDL_GAMEPAD_BUTTON_DPAD_RIGHT, 247.0f, 294.0f, 28.0f, 24.0f);
 
 
             // Helper function to draw custom shaped buttons (LB/RB)
