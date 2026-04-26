@@ -45,10 +45,24 @@ GUI.cpp
 TextureLoader.cpp
 )
 
-# Linking SDL3
-target_link_libraries(gamepad_tester SDL3::SDL3-static
-X11 xkbcommon wayland-client wayland-egl wayland-cursor decor-0 m dl pthread
-)
+# Linking SDL3 and system dependencies based on Platform
+if(WIN32)
+    target_link_libraries(gamepad_tester PRIVATE SDL3::SDL3-static)
+elseif(APPLE)
+    # On macOS, we only need SDL3 and native frameworks (handled by SDL3-static)
+    target_link_libraries(gamepad_tester PRIVATE SDL3::SDL3-static)
+    target_link_options(gamepad_tester PRIVATE "-framework" "Cocoa" "-framework" "IOKit" "-framework" "CoreVideo")
+else()
+    # Linux (requires X11, Wayland etc.)
+    find_library(DECOR_LIB NAMES decor-0 decor-1)
+
+    target_link_libraries(gamepad_tester PRIVATE
+        SDL3::SDL3-static
+        X11 xkbcommon wayland-client wayland-egl wayland-cursor
+        ${DECOR_LIB}
+        m dl pthread
+    )
+endif()
 
 target_compile_definitions(gamepad_tester PRIVATE
     GAMEPAD_TESTER_VERSION="${PROJECT_VERSION}"
