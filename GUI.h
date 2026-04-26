@@ -9,10 +9,9 @@
 #include <iomanip>
 #include <vector>
 
-static const unsigned char controller_map[] = {
+/*static const unsigned char controller_map[] = {
     #embed "assets/noun-xbox-controller-7424807.png"
-};
-
+};*/
 
 class GUI {
 public:

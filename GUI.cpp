@@ -1,5 +1,8 @@
 #include "GUI.h"
+#include "controller_icon.h"
 
+static const unsigned char* controller_map = assets_noun_xbox_controller_7424807_png;
+static const unsigned int controller_map_len = assets_noun_xbox_controller_7424807_png_len;
 
 GUI::GUI(Window& window, GamepadManager& gamepadManager) : m_window(window), m_gamepad(gamepadManager)
 {
@@ -14,7 +17,7 @@ GUI::GUI(Window& window, GamepadManager& gamepadManager) : m_window(window), m_g
     m_texture = TextureLoader::loadFromMemory(
         m_window.getRenderer(),
         controller_map,
-        sizeof(controller_map)
+        controller_map_len
     );
 }
 
