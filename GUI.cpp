@@ -1,0 +1,272 @@
+#include "GUI.h"
+
+
+GUI::GUI(Window& window, GamepadManager& gamepadManager) : m_window(window), m_gamepad(gamepadManager)
+{
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGui::StyleColorsDark();
+
+    // Initialize Backends
+    ImGui_ImplSDL3_InitForSDLRenderer(m_window.getWindow(), m_window.getRenderer());
+    ImGui_ImplSDLRenderer3_Init(m_window.getRenderer());
+
+    m_texture = TextureLoader::loadFromMemory(
+        m_window.getRenderer(),
+        controller_map,
+        sizeof(controller_map)
+    );
+}
+
+
+GUI::~GUI()
+{
+    ImGui_ImplSDLRenderer3_Shutdown();
+    ImGui_ImplSDL3_Shutdown();
+    ImGui::DestroyContext();
+}
+
+
+void GUI::newFrame()
+{
+    ImGuiIO& io = ImGui::GetIO();
+
+    // 1. Get window size and renderer info
+    int w, h;
+    int bw, bh;
+    SDL_GetWindowSize(m_window.getWindow(), &w, &h);
+    SDL_GetRenderOutputSize(m_window.getRenderer(), &bw, &bh);
+
+    // 2. Prevent crash: manually set display size and scale if they are 0
+    io.DisplaySize = ImVec2((float)w, (float)h);
+
+    if (w > 0 && h > 0) {
+        io.DisplayFramebufferScale = ImVec2((float)bw / w, (float)bh / h);
+    } else {
+        io.DisplayFramebufferScale = ImVec2(1.0f, 1.0f);
+    }
+
+    // 3. Check for the specific Viewport crash condition
+    ImGuiViewport* main_viewport = ImGui::GetMainViewport();
+    if (main_viewport) {
+        if (main_viewport->FramebufferScale.x <= 0) main_viewport->FramebufferScale.x = 1.0f;
+        if (main_viewport->FramebufferScale.y <= 0) main_viewport->FramebufferScale.y = 1.0f;
+    }
+
+    ImGui_ImplSDLRenderer3_NewFrame();
+    ImGui_ImplSDL3_NewFrame();
+    ImGui::NewFrame();
+}
+
+
+void GUI::updateUI()
+{
+    int w, h;
+    SDL_GetWindowSize(m_window.getWindow(), &w, &h);
+    ImGui::SetNextWindowPos(ImVec2(0, 0));
+    ImGui::SetNextWindowSize(ImVec2((float)w, (float)h));
+
+    ImGuiWindowFlags flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
+    ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse;
+
+    ImGui::Begin("MainUI", nullptr, flags);
+
+    ImGui::Text("Gamepad Diagnostic Tool");
+    ImGui::Separator();
+
+    if (m_gamepad.isConnected()) {
+        // --- 1. Controller Visualization ---
+        if (m_texture) {
+
+            ImVec2 image_display_size(600, 600);
+
+
+            ImGui::Image(
+                (ImTextureID)m_texture,
+                         image_display_size,
+                         ImVec2(0, 0),          // UV0 (Top Left)
+            ImVec2(1, 1),          // UV1 (Bottom Right)
+            ImVec4(1, 1, 1, 1),    // Tint Color (White)
+            ImVec4(0, 0, 0, 0)     // Border Color (Transparent/None)
+            );
+
+            // --- CLICK TRICK START ---
+            if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
+                ImVec2 mousePos = ImGui::GetMousePos();      // Global screen position of the mouse
+                ImVec2 anchor = ImGui::GetItemRectMin();     // Global screen position of the image top-left corner
+
+
+                float relativeX = mousePos.x - anchor.x;
+                float relativeY = mousePos.y - anchor.y;
+
+
+                std::cout << "Click at: X=" << std::fixed << std::setprecision(1)
+                << relativeX << ", Y=" << relativeY << std::endl;
+            }
+            // --- CLICK TRICK END ---
+
+            // Get the bounding box of the image to use as a coordinate anchor
+            ImVec2 anchor = ImGui::GetItemRectMin();
+            ImDrawList* draw_list = ImGui::GetWindowDrawList();
+
+
+            // --- TRIGGER BARS RENDERER ---
+            auto drawTrigger = [&](SDL_GamepadAxis axis, float xOffset, const char* label) {
+                float val = m_gamepad.getAxis(axis); // Current pressure (0.0 to 1.0)
+
+                float barWidth = 20.0f;
+                float barHeight = 200.0f;
+
+                // Position: Right edge of the image + additional X offset
+                ImVec2 barPosTopLeft = ImVec2(anchor.x + image_display_size.x + xOffset, anchor.y + 50);
+                ImVec2 barPosBottomRight = ImVec2(barPosTopLeft.x + barWidth, barPosTopLeft.y + barHeight);
+
+
+                draw_list->AddRectFilled(barPosTopLeft, barPosBottomRight, IM_COL32(40, 40, 40, 255));
+
+                // Draw Filling (from top to bottom)
+                // Calculating the bottom Y coordinate of the red area based on axis value
+                float fillBottomY = barPosTopLeft.y + (barHeight * val);
+                draw_list->AddRectFilled(barPosTopLeft, ImVec2(barPosBottomRight.x, fillBottomY), IM_COL32(255, 0, 0, 255));
+
+                draw_list->AddRect(barPosTopLeft, barPosBottomRight, IM_COL32(200, 200, 200, 255));
+
+                draw_list->AddText(ImVec2(barPosTopLeft.x, barPosTopLeft.y - 20), IM_COL32(255, 255, 255, 255), label);
+            };
+
+            // Draw both triggers to the right of the image
+            drawTrigger(SDL_GAMEPAD_AXIS_LEFT_TRIGGER, 30.0f, "L2");
+            drawTrigger(SDL_GAMEPAD_AXIS_RIGHT_TRIGGER, 70.0f, "R2");
+
+
+
+            // Overlay circles on button presses
+            auto drawBtn = [&](SDL_GamepadButton btn, float offsetX, float offsetY) {
+                if (m_gamepad.isButtonPressed(btn)) {
+                    draw_list->AddCircleFilled(ImVec2(anchor.x + offsetX, anchor.y + offsetY), 15.0f, IM_COL32(255, 0, 0, 200));
+                }
+            };
+
+
+            drawBtn(SDL_GAMEPAD_BUTTON_SOUTH, 458, 180 + 67); // A
+            drawBtn(SDL_GAMEPAD_BUTTON_EAST,  498, 140 + 67); // B
+            drawBtn(SDL_GAMEPAD_BUTTON_WEST,  418, 140 + 67); // X
+            drawBtn(SDL_GAMEPAD_BUTTON_NORTH, 458, 100 + 67); // Y
+
+            // Back / Select Button (Usually on the left)
+            if (m_gamepad.isButtonPressed(SDL_GAMEPAD_BUTTON_BACK)) {
+                draw_list->AddCircleFilled(ImVec2(anchor.x + 263, anchor.y + 208), 10.0f, IM_COL32(255, 0, 0, 200));
+            }
+
+            // Start / Menu Button (Usually on the right)
+            if (m_gamepad.isButtonPressed(SDL_GAMEPAD_BUTTON_START)) {
+                draw_list->AddCircleFilled(ImVec2(anchor.x + 352, anchor.y + 208), 10.0f, IM_COL32(255, 0, 0, 200));
+            }
+
+            // Function to draw a rectangle for D-pad directions
+            auto drawDPad = [&](SDL_GamepadButton btn, float xOffset, float yOffset, bool vertical) {
+                if (m_gamepad.isButtonPressed(btn)) {
+                    // Size of the D-pad segment
+                    float w = vertical ? 12.0f : 20.0f;
+                    float h = vertical ? 20.0f : 12.0f;
+
+                    ImVec2 posTopLeft = ImVec2(anchor.x + xOffset, anchor.y + yOffset);
+                    ImVec2 posBottomRight = ImVec2(posTopLeft.x + w, posTopLeft.y + h);
+
+                    draw_list->AddRectFilled(posTopLeft, posBottomRight, IM_COL32(255, 0, 0, 200));
+                }
+            };
+
+            drawDPad(SDL_GAMEPAD_BUTTON_DPAD_UP,    223.0f, 273.0f, true);  // Vertical rect
+            drawDPad(SDL_GAMEPAD_BUTTON_DPAD_DOWN,  223.0f, 339.0f, true);  // Vertical rect
+            drawDPad(SDL_GAMEPAD_BUTTON_DPAD_LEFT,  187.0f, 304.0f, false); // Horizontal rect
+            drawDPad(SDL_GAMEPAD_BUTTON_DPAD_RIGHT, 251.0f, 304.0f, false); // Horizontal rect
+
+
+            // Helper function to draw custom shaped buttons (LB/RB)
+            auto drawShapedBtn = [&](SDL_GamepadButton btn, const std::vector<ImVec2>& relativePoints) {
+                if (m_gamepad.isButtonPressed(btn)) {
+                    ImDrawList* draw_list = ImGui::GetWindowDrawList();
+
+                    // Convert relative points to absolute screen positions
+                    std::vector<ImVec2> absPoints;
+                    for (const auto& p : relativePoints) {
+                        absPoints.push_back(ImVec2(anchor.x + p.x, anchor.y + p.y));
+                    }
+
+                    // Draw the filled shape
+                    draw_list->AddConvexPolyFilled(absPoints.data(), (int)absPoints.size(), IM_COL32(255, 0, 0, 200));
+                }
+            };
+
+            // LB Points (Tracing the left shoulder button)
+            std::vector<ImVec2> lbPoints = {
+                {99, 124}, {162, 103}, {173, 109}, {96, 131}
+            };
+            drawShapedBtn(SDL_GAMEPAD_BUTTON_LEFT_SHOULDER, lbPoints);
+
+            // RB Points (Tracing the right shoulder button)
+            std::vector<ImVec2> rbPoints = {
+                {503, 124}, {438, 103}, {426, 109}, {503, 131}
+            };
+            drawShapedBtn(SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER, rbPoints);
+
+
+            ImGui::Spacing(); // Add some vertical space after the image
+        }
+
+        // --- 1. Display connected device info ---
+        ImGui::Text("Connected Device: %s", m_gamepad.getGamepadName());
+        ImGui::Spacing();
+
+        // --- 2. Layout for Sticks and Rumble ---
+        // This is a table with 2 columns.
+        // Column 0: Stretches to fill available space (where your stick squares will go).
+        // Column 1: Fixed at 200 pixels for the rumble controls.
+        if (ImGui::BeginTable("LowerLayout", 2))
+        {
+            ImGui::TableSetupColumn("SticksArea", ImGuiTableColumnFlags_WidthStretch);
+            ImGui::TableSetupColumn("RumbleArea", ImGuiTableColumnFlags_WidthFixed, 200.0f);
+
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+
+            // TODO: Implement stick squares here later
+            ImGui::Text("Stick Visualizer Space (Placeholder)");
+
+            ImGui::TableNextColumn();
+
+            ImGui::PushItemWidth(200.0f);
+
+            ImGui::Text("Rumble Settings");
+            ImGui::Separator();
+
+            // Labels are placed inside the sliders to save horizontal space
+            ImGui::SliderFloat("##Weak", &m_weakValue, 0.0f, 1.0f, "Weak: %.2f");
+            ImGui::SliderFloat("##Strong", &m_strongValue, 0.0f, 1.0f, "Strong: %.2f");
+
+            // Button spans the full width of the 200px column
+            if (ImGui::Button("Test Rumble", ImVec2(200, 40))) {
+                m_gamepad.rumble(m_weakValue, m_strongValue, 1000);
+            }
+
+            ImGui::PopItemWidth();
+
+            ImGui::EndTable();
+        }
+    } else {
+        ImGui::TextColored(ImVec4(1, 0, 0, 1), "No Gamepad Connected");
+    }
+
+    ImGui::End();
+}
+
+
+
+void GUI::render()
+{
+    ImGui::Render();
+    ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), m_window.getRenderer());
+}
+
+
