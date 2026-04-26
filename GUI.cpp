@@ -163,6 +163,16 @@ void GUI::updateUI()
                 draw_list->AddCircleFilled(ImVec2(anchor.x + 352, anchor.y + 208), 10.0f, IM_COL32(255, 0, 0, 200));
             }
 
+            // Function to draw a circle for stick clicks (L3, R3)
+            /* auto drawStickBtn = [&](SDL_GamepadButton btn, float offsetX, float offsetY) {
+                if (m_gamepad.isButtonPressed(btn)) {
+                    draw_list->AddCircleFilled(ImVec2(anchor.x + offsetX, anchor.y + offsetY), 30.0f, IM_COL32(255, 0, 0, 200));
+                }
+            }; */
+
+            // drawStickBtn(SDL_GAMEPAD_BUTTON_LEFT_STICK, 50, 70);
+            // drawStickBtn(SDL_GAMEPAD_BUTTON_RIGHT_STICK, 150, 170);
+
             // Function to draw a rectangle for D-pad directions
             auto drawDPad = [&](SDL_GamepadButton btn, float xOffset, float yOffset, float w, float h) {
                 if (m_gamepad.isButtonPressed(btn)) {
