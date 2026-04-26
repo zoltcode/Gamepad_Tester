@@ -50,8 +50,13 @@ if(WIN32)
     target_link_libraries(gamepad_tester PRIVATE SDL3::SDL3-static)
 elseif(APPLE)
     # On macOS, we only need SDL3 and native frameworks (handled by SDL3-static)
-    target_link_libraries(gamepad_tester PRIVATE SDL3::SDL3-static)
-    target_link_options(gamepad_tester PRIVATE "-framework" "Cocoa" "-framework" "IOKit" "-framework" "CoreVideo")
+    target_link_libraries(gamepad_tester PRIVATE SDL3::SDL3-static
+        "-framework Cocoa"
+        "-framework IOKit"
+        "-framework CoreVideo"
+        "-framework QuartzCore"
+        "-framework Metal"
+    )
 else()
     # Linux (requires X11, Wayland etc.)
     find_library(DECOR_LIB NAMES decor-0 decor-1)
