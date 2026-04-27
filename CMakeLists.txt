@@ -17,7 +17,7 @@ include(FetchContent)
 FetchContent_Declare(
   SDL3
   GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-  GIT_TAG        release-3.4.4 # Or use a specific tag like 'release-3.2.0'
+  GIT_TAG        release-3.4.4
 )
 
 # 2. Make SDL3 targets available
@@ -70,7 +70,7 @@ else()
 endif()
 
 target_compile_definitions(gamepad_tester PRIVATE
-    GAMEPAD_TESTER_VERSION="${PROJECT_VERSION}-rc1" # TODO: REMOVE IN STABLE RELEASE
+    GAMEPAD_TESTER_VERSION="${PROJECT_VERSION}"
 )
 
 # Helpful: tell the compiler where to find ImGui headers in the same folder
