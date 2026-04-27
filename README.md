@@ -18,7 +18,31 @@ A high-performance diagnostic tool for gamepads, built with C++23 and SDL3. Desi
 *   **Immediate Mode UI:** Powered by Dear ImGui for a lightweight and responsive interface.
 *   **Standalone Build:** No external library installation required; all dependencies are managed automatically via CMake FetchContent.
 
-## Installation
+## How to run
+Download the latest release from [releases](https://github.com/zoltcode/Gamepad_Tester/releases) page.
+   
+### Linux and MacOS
+Open your terminal and run:
+
+```bash
+mkdir Gamepad_Tester
+tar -xzf gamepad_tester_linux_x86_64.tar.gz -C Gamepad_Tester
+cd Gamepad_Tester && chmod +x gamepad_tester
+./gamepad_tester
+```
+
+### Windows
+You can right-click the `.zip` file and select **Extract All**, then run `gamepad_tester.exe`. 
+
+Alternatively, use **PowerShell**:
+
+```powershell
+Expand-Archive -Path gamepad_tester_windows_x86_64.zip -DestinationPath Gamepad_Tester
+cd Gamepad_Tester
+.\gamepad_tester.exe
+```
+
+## Build from source
 
 ### Prerequisites
 *   CMake 3.10 or higher
