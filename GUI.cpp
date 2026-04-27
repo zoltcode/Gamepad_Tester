@@ -290,6 +290,30 @@ void GUI::updateUI()
 
             ImGui::PushItemWidth(200.0f);
 
+
+            ImGui::Text("Connection Performance");
+            ImGui::Separator();
+
+            const GamepadStats& stats = m_gamepad.getStats();
+
+            // Logic: Use the moving average stats from your LatencyStats class
+            // Green for 1000Hz+, Yellow for 125-500Hz, Red for < 125Hz
+            ImVec4 hzColor = ImVec4(1, 0, 0, 1); // Default Red
+            if (stats.polling_rate_hz >= 500) hzColor = ImVec4(0, 1, 0, 1);      // Green
+            else if (stats.polling_rate_hz >= 240) hzColor = ImVec4(1, 1, 0, 1); // Yellow
+
+            ImGui::Text("Polling Rate:");
+            ImGui::SameLine();
+            ImGui::TextColored(hzColor, "%.0f Hz", stats.polling_rate_hz);
+
+            ImGui::Text("Avg Latency:");
+            ImGui::SameLine();
+            ImGui::TextColored(ImVec4(0.4f, 0.8f, 1.0f, 1.0f), "%.2f ms", stats.avg_latency_ms);
+
+            ImGui::Spacing();
+            ImGui::Spacing(); // Add double spacing to separate from Rumble
+
+
             ImGui::Text("Rumble Settings");
             ImGui::Separator();
 

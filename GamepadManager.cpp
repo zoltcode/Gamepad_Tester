@@ -17,6 +17,11 @@ void GamepadManager::passEvent(SDL_Event* event)
             m_gamepad = nullptr;
         }
     }
+    // Update latency and gamepad stats
+    if (event->type == SDL_EVENT_GAMEPAD_AXIS_MOTION || event->type == SDL_EVENT_GAMEPAD_BUTTON_DOWN) {
+        // Pass the SDL nanosecond timestamp as uint64_t
+        m_stats.update(static_cast<uint64_t>(event->common.timestamp));
+    }
 }
 
 
