@@ -4,6 +4,22 @@
 static const unsigned char* controller_map = assets_noun_xbox_controller_7424807_png;
 static const unsigned int controller_map_len = assets_noun_xbox_controller_7424807_png_len;
 
+
+static void helpMarker(const char* desc)
+{
+    ImGui::TextDisabled("(?)");
+    if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayShort))
+    {
+        ImGui::BeginTooltip();
+        ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+        ImGui::TextUnformatted(desc);
+        ImGui::PopTextWrapPos();
+        ImGui::EndTooltip();
+    }
+}
+
+
+
 GUI::GUI(Window& window, GamepadManager& gamepadManager) : m_window(window), m_gamepad(gamepadManager)
 {
     IMGUI_CHECKVERSION();
@@ -305,10 +321,14 @@ void GUI::updateUI()
             ImGui::Text("Polling Rate:");
             ImGui::SameLine();
             ImGui::TextColored(hzColor, "%.0f Hz", stats.polling_rate_hz);
+            ImGui::SameLine();
+            helpMarker("To measure accurately move the analog sticks around in a chaotic circular pattern as fast as you can. Controllers often change the frequency from maximum to minimum required to accurately send input because of power saving.");
 
             ImGui::Text("Avg Latency:");
             ImGui::SameLine();
             ImGui::TextColored(ImVec4(0.4f, 0.8f, 1.0f, 1.0f), "%.2f ms", stats.avg_latency_ms);
+            ImGui::SameLine();
+            helpMarker("Hardware-to-OS delay. Lower is better.");
 
             ImGui::Spacing();
             ImGui::Spacing(); // Add double spacing to separate from Rumble
