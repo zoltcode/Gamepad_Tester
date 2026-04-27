@@ -5,7 +5,7 @@ on:
     # This ensures the workflow only runs when pushing a tag
     # matching the vX.X.X format (exactly one digit per section)
     tags:
-      - 'v[0-9].[0-9].[0-9]'
+      - 'v[0-9].[0-9].[0-9]*'
 
 jobs:
   build:
@@ -62,5 +62,7 @@ jobs:
           files: |
             *.tar.gz
             *.zip
+
+          prerelease: ${{ contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
