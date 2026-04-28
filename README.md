@@ -19,9 +19,15 @@ A high-performance diagnostic tool for gamepads, built with C++23 and SDL3. Desi
 *   **Standalone Build:** No external library installation required; all dependencies are managed automatically via CMake FetchContent.
 
 ## How to run
-Download the latest release from [releases](https://github.com/zoltcode/Gamepad_Tester/releases) page.
+
+### Linux (AppImage)
+1. Download `Gamepad_Tester-x86_64.AppImage` from the releases page.
+2. Make it executable: `chmod +x Gamepad_Tester-x86_64.AppImage`.
+3. Run it!
    
 ### Linux and MacOS
+Download the latest .tar.gz release for your platform from [releases](https://github.com/zoltcode/Gamepad_Tester/releases) page.
+
 Open your terminal and run:
 
 ```bash
