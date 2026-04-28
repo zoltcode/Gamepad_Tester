@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Gamepad Tester
+Comment=A native high-performance gamepad diagnostic tool
+Exec=gamepad_tester
+Icon=gamepad_tester
+Terminal=false
+Type=Application
+Categories=Utility;Game;Settings;
+Keywords=gamepad;controller;sdl3;latency;input;
+StartupWMClass=gamepad_tester

@@ -78,3 +78,14 @@ target_include_directories(gamepad_tester PRIVATE
 ${CMAKE_CURRENT_SOURCE_DIR}
 ${CMAKE_CURRENT_SOURCE_DIR}/imgui
 )
+
+# Install the binary
+install(TARGETS gamepad_tester DESTINATION bin)
+
+# Install the .desktop file
+install(FILES assets/gamepad_tester.desktop DESTINATION share/applications)
+
+# Install the icon (make sure the filename matches your .desktop file)
+install(FILES assets/gamepad_tester.png DESTINATION share/icons/hicolor/256x256/apps)
+
+
