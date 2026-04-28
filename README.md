@@ -65,3 +65,6 @@ On Linux systems, ensure your user has permissions to access `/dev/input/` devic
 
 ## License
 This project is licensed under the Apache 2.0 License. See the `LICENSE.txt` file for details.
+
+### Notice on Assets
+The source code of this project is licensed under the Apache License 2.0. Third-party assets, such as the icons, are subject to their own respective licenses and are not covered by the Apache 2.0 license.
