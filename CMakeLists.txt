@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 project(gamepad_tester
-        VERSION 0.3.0
+        VERSION 0.4.0
         LANGUAGES CXX)
 
 # Standard C++23
@@ -70,7 +70,7 @@ else()
 endif()
 
 target_compile_definitions(gamepad_tester PRIVATE
-    GAMEPAD_TESTER_VERSION="${PROJECT_VERSION}"
+    GAMEPAD_TESTER_VERSION="${PROJECT_VERSION}-rc1"
 )
 
 # Helpful: tell the compiler where to find ImGui headers in the same folder

@@ -49,6 +49,7 @@ GUI::~GUI()
 void GUI::newFrame()
 {
     ImGuiIO& io = ImGui::GetIO();
+    io.IniFilename = nullptr;
 
     // 1. Get window size and renderer info
     int w, h;
