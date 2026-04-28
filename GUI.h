@@ -21,18 +21,18 @@ struct ButtonElement {
 };
 
 static const ButtonElement CONTROLLER_MAP[] = {
-    { SDL_GAMEPAD_BUTTON_SOUTH, 460.0f, 260.0f }, // A
-    { SDL_GAMEPAD_BUTTON_EAST,  500.0f, 220.0f }, // B
-    { SDL_GAMEPAD_BUTTON_WEST,  420.0f, 220.0f }, // X
-    { SDL_GAMEPAD_BUTTON_NORTH, 460.0f, 180.0f }, // Y
+    { SDL_GAMEPAD_BUTTON_SOUTH, 460.0f, 200.0f }, // A
+    { SDL_GAMEPAD_BUTTON_EAST,  500.0f, 160.0f }, // B
+    { SDL_GAMEPAD_BUTTON_WEST,  420.0f, 160.0f }, // X
+    { SDL_GAMEPAD_BUTTON_NORTH, 460.0f, 120.0f }, // Y
 
     // Smaller buttons (View/Menu)
-    { SDL_GAMEPAD_BUTTON_BACK,  263.0f, 219.0f, 10.0f },
-    { SDL_GAMEPAD_BUTTON_START, 351.0f, 219.0f, 10.0f },
+    { SDL_GAMEPAD_BUTTON_BACK,  263.0f, 160.0f, 10.0f },
+    { SDL_GAMEPAD_BUTTON_START, 351.0f, 160.0f, 10.0f },
 
     // Stick clicks (L3/R3)
-    { SDL_GAMEPAD_BUTTON_LEFT_STICK, 155.0f, 220.0f, 30.0f },
-    { SDL_GAMEPAD_BUTTON_RIGHT_STICK, 380.0f, 310.0f, 30.0f }
+    { SDL_GAMEPAD_BUTTON_LEFT_STICK, 155.0f, 160.0f, 30.0f },
+    { SDL_GAMEPAD_BUTTON_RIGHT_STICK, 380.0f, 250.0f, 30.0f }
 };
 
 

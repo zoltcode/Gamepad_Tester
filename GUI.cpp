@@ -81,7 +81,7 @@ void GUI::newFrame()
 
 void GUI::updateUI()
 {
-    ImVec2 image_display_size(600, 600 * 0.85f);
+    ImVec2 image_display_size(600, 600 * 0.75f);
     int w, h;
     SDL_GetWindowSize(m_window.getWindow(), &w, &h);
     ImGui::SetNextWindowPos(ImVec2(0, 0));
@@ -140,7 +140,7 @@ void GUI::updateUI()
             auto drawDPad = [&](SDL_GamepadButton btn, float xOffset, float yOffset, float w, float h) {
                 if (m_gamepad.isButtonPressed(btn)) {
                     // TODO: properly update the points. This is a quick fix.
-                    ImVec2 posTopLeft = ImVec2(anchor.x + xOffset, anchor.y + yOffset + 10);
+                    ImVec2 posTopLeft = ImVec2(anchor.x + xOffset, anchor.y + yOffset - 50);
                     ImVec2 posBottomRight = ImVec2(posTopLeft.x + w, posTopLeft.y + h);
 
                     draw_list->AddRectFilled(posTopLeft, posBottomRight, IM_COL32(255, 0, 0, 200));
@@ -163,7 +163,7 @@ void GUI::updateUI()
                     std::vector<ImVec2> absPoints;
                     // TODO: properly update the points. This is a quick fix
                     for (const auto& p : relativePoints) {
-                        absPoints.push_back(ImVec2(anchor.x + p.x, anchor.y + p.y + 10));
+                        absPoints.push_back(ImVec2(anchor.x + p.x, anchor.y + p.y - 50));
                     }
 
                     // Draw the filled shape
@@ -192,7 +192,7 @@ void GUI::updateUI()
                 ImGui::Image(
                     (ImTextureID)m_texture,
                              image_display_size,
-                             ImVec2(0, 0),          // UV0 (Top Left)
+                             ImVec2(0, 0.1f),          // UV0 (Top Left)
                 ImVec2(1, 0.85f),          // UV1 (Bottom Right)
                 ImVec4(1, 1, 1, 1),    // Tint Color (White)
                 ImVec4(0, 0, 0, 0)     // Border Color (Transparent/None)

@@ -12,7 +12,7 @@ int main(int argc, char **argv) {
         return -1;
     }
 
-    Window window("Gamepad Tester", 1280, 800);
+    Window window("Gamepad Tester", 1200, 750);
 
     //
     GamepadManager gamepad;
