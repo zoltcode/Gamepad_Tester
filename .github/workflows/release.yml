@@ -2,11 +2,9 @@ name: Build and Package
 
 on:
   push:
-    # This ensures the workflow only runs when pushing a tag
-    # matching the vX.X.X format (exactly one digit per section)
     tags:
       - 'v[0-9].[0-9].[0-9]*'
-    workflow_dispatch:
+  workflow_dispatch:
 
 jobs:
   build:
@@ -30,7 +28,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Install Linux-specific dependencies for SDL3
+
+      - name: Get latest tag
+        id: get_tag
+        shell: bash
+        run: |
+          git fetch --tags
+          LATEST_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
+          echo "tag=$LATEST_TAG" >> $GITHUB_OUTPUT
+
       - name: Install Linux dependencies
         if: runner.os == 'Linux'
         run: |
@@ -44,26 +50,41 @@ jobs:
       - name: Build
         run: cmake --build build --config Release
 
-      # Package for Linux and macOS
+      - name: Build AppImage
+        if: runner.os == 'Linux'
+        run: |
+          wget -c "https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage"
+          chmod +x linuxdeploy-x86_64.AppImage
+
+          mkdir -p AppDir/usr/bin
+          mkdir -p AppDir/usr/share/applications
+          mkdir -p AppDir/usr/share/icons/hicolor/scalable/apps
+
+          cp build/${{ matrix.executable }} AppDir/usr/bin/
+          cp assets/gamepad_tester.desktop AppDir/usr/share/applications/
+          cp assets/gamepad_tester.svg AppDir/usr/share/icons/hicolor/scalable/apps/
+
+          export ARCH=x86_64
+          ./linuxdeploy-x86_64.AppImage --appdir AppDir --output appimage
+
       - name: Package (Unix)
         if: runner.os != 'Windows'
         run: |
           tar -czvf ${{ matrix.artifact_name }}.tar.gz -C build ${{ matrix.executable }}
 
-      # Package for Windows
       - name: Package (Windows)
         if: runner.os == 'Windows'
         run: |
           Compress-Archive -Path build\Release\${{ matrix.executable }} -DestinationPath ${{ matrix.artifact_name }}.zip
 
-      # This step creates an actual GitHub Release and uploads the files
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ github.ref_type == 'tag' && github.ref_name || steps.get_tag.outputs.tag }}
           files: |
             *.tar.gz
             *.zip
-
+            *.AppImage
           prerelease: ${{ contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
