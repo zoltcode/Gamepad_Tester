@@ -112,49 +112,35 @@ void GUI::updateUI()
                 << relativeX << ", Y=" << relativeY << std::endl;
             }
             // --- CLICK TRICK END ---
+        }
 
+        // --- 1. Display connected device info at the top ---
+        ImGui::Text("Connected Device: %s", m_gamepad.getGamepadName());
+        ImGui::Separator();
+
+        // --- 2. Main Layout Table ---
+        if (ImGui::BeginTable("MainLayout", 2, ImGuiTableFlags_NoSavedSettings))
+        {
+            // Column 0: Controller Outline & Triggers
+            ImGui::TableSetupColumn("VisualizerColumn", ImGuiTableColumnFlags_WidthFixed, 600.0f);
+            // Column 1: Statistics and Stick Squares
+            ImGui::TableSetupColumn("DataColumn", ImGuiTableColumnFlags_WidthStretch);
+
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+
+            // ImVec2 anchor = ImGui::GetCursorScreenPos();
             // Get the bounding box of the image to use as a coordinate anchor
             ImVec2 anchor = ImGui::GetItemRectMin();
             ImDrawList* draw_list = ImGui::GetWindowDrawList();
 
 
-            // Overlay circles on button presses
-            auto drawBtn = [&](SDL_GamepadButton btn, float offsetX, float offsetY) {
-                if (m_gamepad.isButtonPressed(btn)) {
-                    draw_list->AddCircleFilled(ImVec2(anchor.x + offsetX, anchor.y + offsetY), 15.0f, IM_COL32(255, 0, 0, 200));
-                }
-            };
-
-
-            drawBtn(SDL_GAMEPAD_BUTTON_SOUTH, 458, 180 + 67); // A
-            drawBtn(SDL_GAMEPAD_BUTTON_EAST,  498, 140 + 67); // B
-            drawBtn(SDL_GAMEPAD_BUTTON_WEST,  418, 140 + 67); // X
-            drawBtn(SDL_GAMEPAD_BUTTON_NORTH, 458, 100 + 67); // Y
-
-            // Back / Select Button (Usually on the left)
-            if (m_gamepad.isButtonPressed(SDL_GAMEPAD_BUTTON_BACK)) {
-                draw_list->AddCircleFilled(ImVec2(anchor.x + 263, anchor.y + 208), 10.0f, IM_COL32(255, 0, 0, 200));
-            }
-
-            // Start / Menu Button (Usually on the right)
-            if (m_gamepad.isButtonPressed(SDL_GAMEPAD_BUTTON_START)) {
-                draw_list->AddCircleFilled(ImVec2(anchor.x + 352, anchor.y + 208), 10.0f, IM_COL32(255, 0, 0, 200));
-            }
-
-            // Function to draw a circle for stick clicks (L3, R3)
-            auto drawStickBtn = [&](SDL_GamepadButton btn, float offsetX, float offsetY) {
-                if (m_gamepad.isButtonPressed(btn)) {
-                    draw_list->AddCircleFilled(ImVec2(anchor.x + offsetX, anchor.y + offsetY), 30.0f, IM_COL32(255, 0, 0, 200));
-                }
-            };
-
-            drawStickBtn(SDL_GAMEPAD_BUTTON_LEFT_STICK, 155, 208);
-            drawStickBtn(SDL_GAMEPAD_BUTTON_RIGHT_STICK, 382, 298);
 
             // Function to draw a rectangle for D-pad directions
             auto drawDPad = [&](SDL_GamepadButton btn, float xOffset, float yOffset, float w, float h) {
                 if (m_gamepad.isButtonPressed(btn)) {
-                    ImVec2 posTopLeft = ImVec2(anchor.x + xOffset, anchor.y + yOffset);
+                    // TODO: properly update the points. This is a quick fix.
+                    ImVec2 posTopLeft = ImVec2(anchor.x + xOffset, anchor.y + yOffset + 10);
                     ImVec2 posBottomRight = ImVec2(posTopLeft.x + w, posTopLeft.y + h);
 
                     draw_list->AddRectFilled(posTopLeft, posBottomRight, IM_COL32(255, 0, 0, 200));
@@ -175,8 +161,9 @@ void GUI::updateUI()
 
                     // Convert relative points to absolute screen positions
                     std::vector<ImVec2> absPoints;
+                    // TODO: properly update the points. This is a quick fix
                     for (const auto& p : relativePoints) {
-                        absPoints.push_back(ImVec2(anchor.x + p.x, anchor.y + p.y));
+                        absPoints.push_back(ImVec2(anchor.x + p.x, anchor.y + p.y + 10));
                     }
 
                     // Draw the filled shape
@@ -198,36 +185,6 @@ void GUI::updateUI()
 
 
             ImGui::Spacing(); // Add some vertical space after the image
-        }
-
-        // --- 1. Display connected device info at the top ---
-        ImGui::Text("Connected Device: %s", m_gamepad.getGamepadName());
-        ImGui::Separator();
-
-        // --- 2. Main Layout Table ---
-        if (ImGui::BeginTable("MainLayout", 2, ImGuiTableFlags_NoSavedSettings))
-        {
-            // Column 0: Controller Outline & Triggers
-            ImGui::TableSetupColumn("VisualizerColumn", ImGuiTableColumnFlags_WidthFixed, 600.0f);
-            // Column 1: Statistics and Stick Squares
-            ImGui::TableSetupColumn("DataColumn", ImGuiTableColumnFlags_WidthStretch);
-
-            ImGui::TableNextRow();
-            ImGui::TableNextColumn();
-
-            ImVec2 anchor = ImGui::GetCursorScreenPos();
-
-            // --- Draw Buttons (LB/RB) ---
-            auto drawShapedBtn = [&](SDL_GamepadButton btn, const std::vector<ImVec2>& relativePoints) {
-                if (m_gamepad.isButtonPressed(btn)) {
-                    ImDrawList* draw_list = ImGui::GetWindowDrawList();
-                    std::vector<ImVec2> absPoints;
-                    for (const auto& p : relativePoints) {
-                        absPoints.push_back(ImVec2(anchor.x + p.x, anchor.y + p.y));
-                    }
-                    draw_list->AddConvexPolyFilled(absPoints.data(), (int)absPoints.size(), IM_COL32(255, 0, 0, 200));
-                }
-            };
 
 
             // --- DRAW CONTROLLER OUTLINE HERE ---
@@ -246,6 +203,30 @@ void GUI::updateUI()
 
                 std::vector<ImVec2> rbPoints = {{503, 124}, {438, 103}, {426, 109}, {503, 131}};
                 drawShapedBtn(SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER, rbPoints);
+
+                for (const auto& element : CONTROLLER_MAP) {
+                    if (m_gamepad.isButtonPressed(element.button)) {
+                        draw_list->AddCircleFilled(
+                            ImVec2(anchor.x + element.x, anchor.y + element.y),
+                                                   element.radius,
+                                                   IM_COL32(255, 0, 0, 200) // Red with some transparency
+                        );
+                    }
+                }
+
+                if (ImGui::IsItemClicked()) {
+                    ImVec2 mousePos = ImGui::GetMousePos();
+                    // Calculate relative coordinates from the top-left of the image
+                    float relativeX = mousePos.x - anchor.x;
+                    float relativeY = mousePos.y - anchor.y;
+
+                    // Output to terminal/console
+                    printf("Clicked at: { %f, %f }\n", relativeX, relativeY);
+
+                    // Optional: Output to a temporary string to show on screen
+                    // static char debugBuf[128];
+                    // sprintf(debugBuf, "Last Click: %.1f, %.1f", relativeX, relativeY);
+                }
 
 
             // (Ensure 'anchor' is defined relative to the current cursor position)
