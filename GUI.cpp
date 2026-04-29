@@ -262,7 +262,7 @@ void GUI::updateUI()
             drawStickVisualizer("Right", SDL_GAMEPAD_AXIS_RIGHTX, SDL_GAMEPAD_AXIS_RIGHTY);
             ImGui::EndGroup();
 
-            ImGui::Dummy(ImVec2(600, 220));
+            ImGui::Dummy(ImVec2(600, 20));
 
 
             // Tell ImGui how much space the drawing took so the table doesn't collapse
