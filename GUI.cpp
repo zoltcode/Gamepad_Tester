@@ -112,7 +112,6 @@ void GUI::updateUI()
                 << relativeX << ", Y=" << relativeY << std::endl;
             }
             // --- CLICK TRICK END ---
-        }
 
         // --- 1. Display connected device info at the top ---
         ImGui::Text("Connected Device: %s", m_gamepad.getGamepadName());
@@ -227,7 +226,7 @@ void GUI::updateUI()
                     // static char debugBuf[128];
                     // sprintf(debugBuf, "Last Click: %.1f, %.1f", relativeX, relativeY);
                 }
-
+            }
 
             // (Ensure 'anchor' is defined relative to the current cursor position)
 
