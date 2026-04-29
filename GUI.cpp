@@ -312,7 +312,8 @@ void GUI::updateUI()
             "To measure accurately rapidly move your sticks back and forth. "
             "\nModern controllers have a power-saving feature that lowers the polling rate according to what's needed to accurately depict the movement.");
 
-            ImGui::Text("Latency: %.2f ms", stats.avg_latency_ms);
+            ImGui::Text("Latency: "); ImGui::SameLine();
+            ImGui::TextColored(ImVec4(0, 0.8f, 1, 1), "%.2f ms", stats.avg_latency_ms);
             ImGui::SameLine();
             helpMarker("The estimated time it takes for an input to be processed by the software.\n\n"
             "Lower is better. This value depends on the polling rate and the system's processing speed.");
