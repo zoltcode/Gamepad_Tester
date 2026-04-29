@@ -99,18 +99,18 @@ void GUI::updateUI()
         // --- 1. Controller Visualization ---
 
             // --- CLICK TRICK START ---
-            if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
-                ImVec2 mousePos = ImGui::GetMousePos();      // Global screen position of the mouse
-                ImVec2 anchor = ImGui::GetItemRectMin();     // Global screen position of the image top-left corner
-
-
-                float relativeX = mousePos.x - anchor.x;
-                float relativeY = mousePos.y - anchor.y;
-
-
-                std::cout << "Click at: X=" << std::fixed << std::setprecision(1)
-                << relativeX << ", Y=" << relativeY << std::endl;
-            }
+            // if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
+            //     ImVec2 mousePos = ImGui::GetMousePos();      // Global screen position of the mouse
+            //     ImVec2 anchor = ImGui::GetItemRectMin();     // Global screen position of the image top-left corner
+            //
+            //
+            //     float relativeX = mousePos.x - anchor.x;
+            //     float relativeY = mousePos.y - anchor.y;
+            //
+            //
+            //     std::cout << "Click at: X=" << std::fixed << std::setprecision(1)
+            //     << relativeX << ", Y=" << relativeY << std::endl;
+            // }
             // --- CLICK TRICK END ---
 
         // --- 1. Display connected device info at the top ---
@@ -213,19 +213,15 @@ void GUI::updateUI()
                     }
                 }
 
-                if (ImGui::IsItemClicked()) {
-                    ImVec2 mousePos = ImGui::GetMousePos();
-                    // Calculate relative coordinates from the top-left of the image
-                    float relativeX = mousePos.x - anchor.x;
-                    float relativeY = mousePos.y - anchor.y;
-
-                    // Output to terminal/console
-                    printf("Clicked at: { %f, %f }\n", relativeX, relativeY);
-
-                    // Optional: Output to a temporary string to show on screen
-                    // static char debugBuf[128];
-                    // sprintf(debugBuf, "Last Click: %.1f, %.1f", relativeX, relativeY);
-                }
+                // if (ImGui::IsItemClicked()) {
+                //     ImVec2 mousePos = ImGui::GetMousePos();
+                //     // Calculate relative coordinates from the top-left of the image
+                //     float relativeX = mousePos.x - anchor.x;
+                //     float relativeY = mousePos.y - anchor.y;
+                //
+                //     // Output to terminal/console
+                //     printf("Clicked at: { %f, %f }\n", relativeX, relativeY);
+                // }
             }
 
             // (Ensure 'anchor' is defined relative to the current cursor position)
@@ -264,9 +260,6 @@ void GUI::updateUI()
 
             ImGui::Dummy(ImVec2(600, 20));
 
-
-            // Tell ImGui how much space the drawing took so the table doesn't collapse
-            // ImGui::Dummy(ImVec2(600, 500));
 
             // --- Switch to Right Column for Data ---
             ImGui::TableNextColumn();
@@ -311,9 +304,18 @@ void GUI::updateUI()
             const GamepadStats& stats = m_gamepad.getStats();
             ImVec4 hzColor = (stats.polling_rate_hz >= 500) ? ImVec4(0, 1, 0, 1) : (stats.polling_rate_hz >= 240) ? ImVec4(1, 1, 0, 1) : ImVec4(1, 0, 0, 1);
 
-            ImGui::Text("Rate:"); ImGui::SameLine();
+            ImGui::Text("Polling rate:"); ImGui::SameLine();
             ImGui::TextColored(hzColor, "%.0f Hz", stats.polling_rate_hz);
+            ImGui::SameLine();
+            helpMarker("How many times per second the controller sends data to the PC.\n\n"
+            "Higher values (e.g., 1000Hz) mean smoother movement and lower input delay. "
+            "To measure accurately rapidly move your sticks back and forth. "
+            "\nModern controllers have a power-saving feature that lowers the polling rate according to what's needed to accurately depict the movement.");
+
             ImGui::Text("Latency: %.2f ms", stats.avg_latency_ms);
+            ImGui::SameLine();
+            helpMarker("The estimated time it takes for an input to be processed by the software.\n\n"
+            "Lower is better. This value depends on the polling rate and the system's processing speed.");
 
             ImGui::Spacing(); ImGui::Separator(); ImGui::Spacing();
 
