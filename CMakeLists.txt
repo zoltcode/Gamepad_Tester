@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 project(gamepad_tester
-        VERSION 0.4.0
+        VERSION 0.5.0
         LANGUAGES CXX)
 
 # Standard C++23

@@ -212,16 +212,16 @@ void GUI::updateUI()
                         );
                     }
                 }
-
-                if (ImGui::IsItemClicked()) {
-                    ImVec2 mousePos = ImGui::GetMousePos();
-                    // Calculate relative coordinates from the top-left of the image
-                    float relativeX = mousePos.x - anchor.x;
-                    float relativeY = mousePos.y - anchor.y;
-
-                    // Output to terminal/console
-                    printf("Clicked at: { %f, %f }\n", relativeX, relativeY);
-                }
+                // NEW CLICK TRICK
+                // if (ImGui::IsItemClicked()) {
+                //     ImVec2 mousePos = ImGui::GetMousePos();
+                //     // Calculate relative coordinates from the top-left of the image
+                //     float relativeX = mousePos.x - anchor.x;
+                //     float relativeY = mousePos.y - anchor.y;
+                //
+                //     // Output to terminal/console
+                //     printf("Clicked at: { %f, %f }\n", relativeX, relativeY);
+                // }
             }
 
             // (Ensure 'anchor' is defined relative to the current cursor position)
@@ -229,6 +229,9 @@ void GUI::updateUI()
             // [Insert your AddImage or AddLine calls for the controller outline here]
 
             ImGui::Spacing();
+            ImGui::Separator();
+
+            ImGui::Dummy(ImVec2(0.0f, 15.0f));
             // --- 3. Stick Visualizers (Side-by-Side) ---
             auto drawStickVisualizer = [&](const char* label, SDL_GamepadAxis axisX, SDL_GamepadAxis axisY) {
                 ImGui::BeginGroup();
@@ -253,12 +256,27 @@ void GUI::updateUI()
             };
 
             ImGui::BeginGroup();
-            drawStickVisualizer("Left", SDL_GAMEPAD_AXIS_LEFTX, SDL_GAMEPAD_AXIS_LEFTY);
-            ImGui::SameLine();
-            drawStickVisualizer("Right", SDL_GAMEPAD_AXIS_RIGHTX, SDL_GAMEPAD_AXIS_RIGHTY);
+            if (ImGui::BeginTable("StickGrid", 2, ImGuiTableFlags_None, ImVec2(600, 0)))
+            {
+                ImGui::TableSetupColumn("L", ImGuiTableColumnFlags_WidthFixed, 300.0f);
+                ImGui::TableSetupColumn("R", ImGuiTableColumnFlags_WidthFixed, 300.0f);
+
+                ImGui::TableNextColumn();
+                // Center the 160px box inside the 300px column: (300 - 160) / 2 = 70
+                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 70.0f);
+                drawStickVisualizer("Left", SDL_GAMEPAD_AXIS_LEFTX, SDL_GAMEPAD_AXIS_LEFTY);
+
+                ImGui::TableNextColumn();
+                // Do the same for the right column
+                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 70.0f);
+                drawStickVisualizer("Right", SDL_GAMEPAD_AXIS_RIGHTX, SDL_GAMEPAD_AXIS_RIGHTY);
+
+                ImGui::EndTable();
+            }
+
             ImGui::EndGroup();
 
-            ImGui::Dummy(ImVec2(600, 20));
+            // ImGui::Dummy(ImVec2(600, 20));
 
 
             // --- Switch to Right Column for Data ---
