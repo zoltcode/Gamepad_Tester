@@ -86,6 +86,6 @@ install(TARGETS gamepad_tester DESTINATION bin)
 install(FILES assets/gamepad_tester.desktop DESTINATION share/applications)
 
 # Install the icon (make sure the filename matches your .desktop file)
-install(FILES assets/gamepad_tester.png DESTINATION share/icons/hicolor/256x256/apps)
+install(FILES assets/gamepad_tester.svg DESTINATION share/icons/hicolor/scalable/apps)
 
 
