@@ -11,6 +11,13 @@ A high-performance diagnostic tool for gamepads, built with C++23 and SDL3. Desi
 *   **Input Visualization:** Full mapping for axes, triggers, and buttons with real-time pressure and position feedback.
 *   **Hardware Testing:** Built-in rumble/haptic feedback testing for both weak and strong motors.
 
+## Usage example
+This tool helps you identify hardware issues **before** they impact your gameplay. For example:
+
+*   **Early Drift Detection:** Identify even microscopic stick drift or jitter that isn't yet visible in-game.
+*   **Warranty Validation:** Use precise polling and latency data to verify if your controller meets manufacturer specs or has technical issues, helping you provide proof for warranty claims or returns.
+*   **Performance Optimization:** Ensure your gamepad capabilities are enough for competitive play.
+
 ## Technical Implementation
 
 *   **Modern C++:** Built using the C++23 standard.
