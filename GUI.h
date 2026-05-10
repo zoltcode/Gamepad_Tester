@@ -32,7 +32,9 @@ static const ButtonElement CONTROLLER_MAP[] = {
 
     // Stick clicks (L3/R3)
     { SDL_GAMEPAD_BUTTON_LEFT_STICK, 155.0f, 160.0f, 30.0f },
-    { SDL_GAMEPAD_BUTTON_RIGHT_STICK, 380.0f, 250.0f, 30.0f }
+    { SDL_GAMEPAD_BUTTON_RIGHT_STICK, 380.0f, 250.0f, 30.0f },
+
+    { SDL_GAMEPAD_BUTTON_GUIDE, 308.0f, 118.0f, 25.0f}
 };
 
 

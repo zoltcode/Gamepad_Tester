@@ -118,7 +118,7 @@ void GUI::updateUI()
         ImGui::Separator();
 
         // --- 2. Main Layout Table ---
-        if (ImGui::BeginTable("MainLayout", 2, ImGuiTableFlags_NoSavedSettings))
+        if (ImGui::BeginTable("MainLayout", 2, ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_BordersInnerV))
         {
             // Column 0: Controller Outline & Triggers
             ImGui::TableSetupColumn("VisualizerColumn", ImGuiTableColumnFlags_WidthFixed, 600.0f);
@@ -213,15 +213,15 @@ void GUI::updateUI()
                     }
                 }
 
-                // if (ImGui::IsItemClicked()) {
-                //     ImVec2 mousePos = ImGui::GetMousePos();
-                //     // Calculate relative coordinates from the top-left of the image
-                //     float relativeX = mousePos.x - anchor.x;
-                //     float relativeY = mousePos.y - anchor.y;
-                //
-                //     // Output to terminal/console
-                //     printf("Clicked at: { %f, %f }\n", relativeX, relativeY);
-                // }
+                if (ImGui::IsItemClicked()) {
+                    ImVec2 mousePos = ImGui::GetMousePos();
+                    // Calculate relative coordinates from the top-left of the image
+                    float relativeX = mousePos.x - anchor.x;
+                    float relativeY = mousePos.y - anchor.y;
+
+                    // Output to terminal/console
+                    printf("Clicked at: { %f, %f }\n", relativeX, relativeY);
+                }
             }
 
             // (Ensure 'anchor' is defined relative to the current cursor position)
