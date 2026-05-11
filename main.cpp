@@ -7,8 +7,6 @@
 
 int main(int argc, char **argv) {
     // 1. Initialize SDL subsystems
-    // Fix for gamepad as touchpad
-    SDL_SetHint(SDL_HINT_JOYSTICK_LINUX_CLASSIC, "1");
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD) == false) {
         std::cout << "Could not initialize SDL: " << SDL_GetError() << std::endl;
         return -1;

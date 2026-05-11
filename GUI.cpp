@@ -391,6 +391,9 @@ void GUI::updateUI()
 
             ImGui::Dummy(tpSize);
 
+            ImGui::Text("Touchpads detected: %d", m_gamepad.getNumTouchpadFingers(0) > 0 ? 1 : 0);
+            ImGui::Text("Fingers supported: %d", m_gamepad.getNumTouchpadFingers(0));
+
 
 
 

@@ -70,7 +70,7 @@ else()
 endif()
 
 target_compile_definitions(gamepad_tester PRIVATE
-    GAMEPAD_TESTER_VERSION="${PROJECT_VERSION}-alpha.2"
+    GAMEPAD_TESTER_VERSION="${PROJECT_VERSION}-alpha.3"
 )
 
 # Helpful: tell the compiler where to find ImGui headers in the same folder
