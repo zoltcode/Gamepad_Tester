@@ -350,6 +350,50 @@ void GUI::updateUI()
             ImGui::PopItemWidth();
             ImGui::EndGroup();
 
+
+
+            // --- 6. Touchpad Visualizer ---
+            ImGui::Spacing();
+            ImGui::Separator();
+            ImGui::Spacing();
+            ImGui::Text("Touchpad Tracking");
+
+            // Define drawing area
+            ImVec2 tpSize(400.0f, 180.0f);
+            // Center the touchpad in the column (assuming ~600px available based on your StickGrid)
+            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + (ImGui::GetContentRegionAvail().x - tpSize.x) * 0.5f);
+
+            ImVec2 tpPos = ImGui::GetCursorScreenPos();
+            // ImDrawList* draw_list = ImGui::GetWindowDrawList();
+
+            // Draw Background and Outline
+            draw_list->AddRectFilled(tpPos, ImVec2(tpPos.x + tpSize.x, tpPos.y + tpSize.y), IM_COL32(30, 30, 30, 255));
+            draw_list->AddRect(tpPos, ImVec2(tpPos.x + tpSize.x, tpPos.y + tpSize.y), IM_COL32(255, 255, 255, 255), 0.0f, 0, 1.5f);
+
+            // Fetch and draw fingers
+            // Most gamepads only have 1 touchpad (index 0) with 2 fingers
+            int numFingers = m_gamepad.getNumTouchpadFingers(0);
+            for (int i = 0; i < numFingers; i++) {
+                TouchpadFinger finger = m_gamepad.getTouchpadFinger(0, i);
+
+                if (finger.down) {
+                    // Map normalized SDL coordinates (0.0-1.0) to UI rect
+                    ImVec2 fingerPos = ImVec2(tpPos.x + (finger.x * tpSize.x),
+                                              tpPos.y + (finger.y * tpSize.y));
+
+                    int alpha = (int)(finger.pressure * 255.0f);
+                    if (alpha < 60) alpha = 60;
+
+                    draw_list->AddCircleFilled(fingerPos, 8.0f, IM_COL32(255, 0, 0, alpha));
+                    draw_list->AddCircle(fingerPos, 8.0f, IM_COL32(255, 255, 255, 150), 0, 1.0f);
+                }
+            }
+
+            ImGui::Dummy(tpSize);
+
+
+
+
             ImGui::EndTable();
         }
     } else {

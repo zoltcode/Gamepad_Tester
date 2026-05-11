@@ -47,6 +47,13 @@ struct GamepadStats {
     }
 };
 
+struct TouchpadFinger {
+    bool down = false;
+    float x = 0.0f;
+    float y = 0.0f;
+    float pressure = 0.0f;
+};
+
 
 
 class GamepadManager {
@@ -76,6 +83,20 @@ public:
 
     void passEvent(SDL_Event* event);
     void rumble(float weak_motor, float strong_motor, uint32_t duration);
+
+
+    TouchpadFinger getTouchpadFinger(int touchpadIndex, int fingerIndex) {
+        TouchpadFinger data;
+        if (m_gamepad) {
+            SDL_GetGamepadTouchpadFinger(m_gamepad, touchpadIndex, fingerIndex,
+                                         &data.down, &data.x, &data.y, &data.pressure);
+        }
+        return data;
+    }
+
+    int getNumTouchpadFingers(int touchpadIndex) {
+        return m_gamepad ? SDL_GetNumGamepadTouchpadFingers(m_gamepad, touchpadIndex) : 0;
+    }
 
 private:
     SDL_Gamepad* m_gamepad{ nullptr };
